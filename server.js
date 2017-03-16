@@ -43,7 +43,7 @@ app.get('/', (req, res)=>{
         }).then((doc)=>{
             var goal;
             if (doc) {
-                goal = host + '/' + doc.sid;
+                goal = '/' + doc.sid;
                 res.send('<a href="'+ goal +'">点击短链接:'+ goal +'</a>');
             } else {
                 var sid = TodoList.getHash();
@@ -51,7 +51,7 @@ app.get('/', (req, res)=>{
                     sid: sid,
                     goal: url
                 }).then((result)=>{
-                    goal = host + '/' + sid;
+                    goal = '/' + sid;
                     res.send('<a href="'+ goal +'">点击短链接'+ goal +'</a>');
                 })
             }
