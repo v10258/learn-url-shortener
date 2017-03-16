@@ -1,13 +1,13 @@
-var express = require('express');
-var app = express();
-
 const url = require('url');
+const path = require('path');
 const crypto = require('crypto');
 
 const mongo = require('mongodb').MongoClient
 const dburl = 'mongodb://localhost:27017/learn';
-
 var coll;
+
+var express = require('express');
+var app = express();
 
 mongo.connect(dburl, function(err, conn) {
     if (err) console.log(err);
@@ -16,6 +16,9 @@ mongo.connect(dburl, function(err, conn) {
     coll = conn.collection('url_shortener');
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'templates'));
+app.set('view engine', 'jade');
 
 const host = 'https://node-practice-v10258.c9users.io';
 
@@ -33,21 +36,23 @@ app.get('/', (req, res)=>{
     var url = req.query.q;
     
     if (!url||urlRegexp.test(url)) {
-        res.send('404');
+        res.render('index');
     } else {
         coll.findOne({
             goal: url
         }).then((doc)=>{
+            var goal;
             if (doc) {
-                res.send(host +'/' + doc.sid);
+                goal = host + '/' + doc.sid;
+                res.send('<a href="'+ goal +'">点击短链接:'+ goal +'</a>');
             } else {
                 var sid = TodoList.getHash();
                 coll.insert({
                     sid: sid,
                     goal: url
                 }).then((result)=>{
-                    console.log('result', result);
-                    res.send(host + '/' + sid);
+                    goal = host + '/' + sid;
+                    res.send('<a href="'+ goal +'">点击短链接'+ goal +'</a>');
                 })
             }
         })
